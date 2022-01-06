@@ -1,0 +1,92 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+static def releaseDate() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("GMT+08:00"))
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.bearya.mobile.inno"
+        minSdk 21
+        targetSdk 30
+        versionCode 100
+        versionName "1.0.0"
+        buildFeatures {
+            viewBinding true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    signingConfigs {
+        config {
+            keyAlias 'BeiYa'
+            storePassword 'BeiYa123'
+            storeFile file('../bearya_keystore.jks')
+            keyPassword 'BeiYa!@#'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.config
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.config
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if ("release" == buildType.name)
+                output.outputFileName = "bearya_inno_release_${defaultConfig.versionName}_${releaseDate()}.apk"
+            else
+                output.outputFileName = "bearya_inno_debug_${defaultConfig.versionName}_${releaseDate()}.apk"
+        }
+    }
+
+}
+
+dependencies {
+
+    implementation libs.bundles.androidx
+    implementation libs.bundles.rxTools
+    implementation libs.bundles.zxing
+    implementation libs.bundles.kotlin
+
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
+    implementation 'io.github.lucksiege:pictureselector:v2.7.3-rc10'
+    implementation 'com.github.kelinZhou:ApkUpdater:3.1.0'
+    implementation 'com.kaopiz:kprogresshud:1.2.0'
+    implementation 'com.tonystark.android:socket:4.2.1'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation 'com.vmadalin:easypermissions-ktx:1.0.0'
+    implementation 'com.orhanobut:logger:2.2.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+}

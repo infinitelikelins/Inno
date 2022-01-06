@@ -1,0 +1,51 @@
+enableFeaturePreview('VERSION_CATALOGS')
+
+dependencyResolutionManagement {
+
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+        maven { url "https://maven.aliyun.com/repository/jcenter" }
+    }
+
+    versionCatalogs {
+        libs {
+
+            alias("androidx-core-ktx").to('androidx.core:core-ktx:1.7.0')
+            alias("androidx-appcompat").to('androidx.appcompat:appcompat:1.4.0')
+            alias("androidx-constraintlayout").to('androidx.constraintlayout:constraintlayout:2.1.2')
+            alias("androidx-recyclerview").to('androidx.recyclerview:recyclerview:1.2.1')
+            alias("androidx-activity").to('androidx.activity:activity-ktx:1.4.0')
+            bundle("androidx", ["androidx-core-ktx", "androidx-appcompat", "androidx-constraintlayout",
+                                "androidx-recyclerview","androidx-activity"])
+
+            version("kotlin-version", '1.6.10')
+            version("kotlinx_coroutines_version", '1.5.2')
+            alias("kotlin-stdlib-jdk7").to("org.jetbrains.kotlin", "kotlin-stdlib-jdk7").versionRef("kotlin-version")
+            alias("kotlin-stdlib-jdk8").to("org.jetbrains.kotlin", "kotlin-stdlib-jdk8").versionRef("kotlin-version")
+            alias("kotlinx-coroutines-core").to("org.jetbrains.kotlinx", "kotlinx-coroutines-core").versionRef("kotlinx_coroutines_version")
+            alias("kotlinx-coroutines-android").to("org.jetbrains.kotlinx", "kotlinx-coroutines-android").versionRef("kotlinx_coroutines_version")
+            bundle("kotlin", ["kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlinx-coroutines-core", "kotlinx-coroutines-android"])
+
+            alias("google-zxing-android-core").to("com.google.zxing:android-core:3.3.0")
+            alias("google-zxing-core").to("com.google.zxing:core:3.3.2")
+            bundle("zxing", ["google-zxing-core", "google-zxing-android-core"])
+
+            //基础工具库
+            alias("rxTools-kit").to("com.github.tamsiree.RxTool:RxKit:2.6.3")
+            //UI库
+            alias("rxTools-ui").to('com.github.tamsiree.RxTool:RxUI:2.6.3')
+            //相机库
+            alias("rxTools-camera").to('com.github.tamsiree.RxTool:RxCamera:2.6.3')
+            //功能库（Zxing扫描与生成二维码条形码）
+            alias("rxTools-feature").to('com.github.tamsiree.RxTool:RxFeature:2.6.3')
+            bundle("rxTools", ["rxTools-kit", "rxTools-ui", "rxTools-feature", "rxTools-camera"])
+        }
+    }
+}
+
+rootProject.name = "Inno"
+include ':app'
