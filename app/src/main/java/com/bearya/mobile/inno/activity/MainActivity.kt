@@ -41,7 +41,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        Toast.makeText(this, "您拒绝使用摄像头扫描二维码", Toast.LENGTH_LONG).show()
+        if (requestCode == permissionCameraRequestCode)
+            Toast.makeText(this, "您拒绝使用摄像头扫描二维码", Toast.LENGTH_LONG).show()
     }
 
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
