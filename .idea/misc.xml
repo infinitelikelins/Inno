@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/BeiYa/code/Inno/app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.378125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/drawable/ic_launcher_background.xml" value="0.378125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/drawable/open_gallery.xml" value="0.378125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/drawable/upload_image.xml" value="0.378125" />
@@ -10,7 +11,9 @@
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/activity_main.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/activity_scanner_code.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/empty_message.xml" value="0.3578125" />
+        <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/footer_image.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/footer_item_add_image.xml" value="0.3578125" />
+        <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/item_image.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/layout/item_messages.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/menu/image_upload_menu.xml" value="0.3578125" />
         <entry key="..\:/BeiYa/code/Inno/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2140625" />

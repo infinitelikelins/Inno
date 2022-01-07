@@ -22,6 +22,7 @@ import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.listener.OnResultCallbackListener
+import com.thecode.aestheticdialogs.*
 
 class ImageUploadActivity : AppCompatActivity() {
 
@@ -55,23 +56,27 @@ class ImageUploadActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "同步图库"
 
-        bindView.openGallery.setOnClickListener { openLib() }
-
         bindView.images.layoutManager =
             GridLayoutManager(this, 3, LinearLayoutManager.VERTICAL, false)
+
         imagesAdapter.setOnItemClickListener { _, _, position ->
             run {
-                AlertDialog.Builder(this).setTitle("上传取消").setMessage("确定要取消上传该张图片吗?")
-                    .setPositiveButton("确定") { _, _ ->
-                        imagesAdapter.removeAt(position)
-                    }.setNegativeButton("取消") { _, _ ->
+                if (imagesAdapter.data.size - 1 == position) {
+                    openLib()
+                } else {
+                    AlertDialog.Builder(this).setTitle("上传取消").setMessage("确定要取消上传该张图片吗?")
+                        .setPositiveButton("确定") { _, _ ->
+                            imagesAdapter.removeAt(position)
+                        }.setNegativeButton("取消") { _, _ ->
 
-                    }.show()
+                        }.show()
+                }
             }
         }
 
         bindView.images.adapter = imagesAdapter
         imagesAdapter.setEmptyView(R.layout.empty_message)
+        imagesAdapter.addData(LocalMedia())
 
         socketViewModel.message.observe(this) {
             bindView.message.text = it
@@ -99,7 +104,9 @@ class ImageUploadActivity : AppCompatActivity() {
             .imageEngine(GlideEngine.createGlideEngine())
             .forResult(object : OnResultCallbackListener<LocalMedia> {
                 override fun onResult(result: MutableList<LocalMedia>?) {
-                    imagesAdapter.setNewInstance(result)
+                    if (result != null) {
+                        imagesAdapter.addData(imagesAdapter.data.size - 1, result)
+                    }
                 }
 
                 override fun onCancel() {
@@ -111,7 +118,7 @@ class ImageUploadActivity : AppCompatActivity() {
     private fun showHUD() {
         if (kProgressHUD == null) {
             kProgressHUD = KProgressHUD.create(this, KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel("文件正在发送中...")
+                .setLabel("文件正在同步中...")
                 .setDimAmount(0.5f)
                 .setAutoDismiss(false)
                 .setCancellable(false)
@@ -124,7 +131,13 @@ class ImageUploadActivity : AppCompatActivity() {
             kProgressHUD?.dismiss()
         }
         kProgressHUD = null
-        imagesAdapter.setNewInstance(mutableListOf())
+        imagesAdapter.setNewInstance(mutableListOf(LocalMedia()))
+        AestheticDialog.Builder(this, DialogStyle.EMOTION, DialogType.SUCCESS)
+            .setTitle("文件同步完成")
+            .setMessage("同步文件可在小贝端查看")
+            .setCancelable(true)
+            .setAnimation(DialogAnimation.SHRINK)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -136,8 +149,9 @@ class ImageUploadActivity : AppCompatActivity() {
         if (item.itemId == android.R.id.home) {
             finish()
         } else if (item.itemId == R.id.upload_gallery) {
-            if (canUploadImage && imagesAdapter.data.size > 0) {
-                socketViewModel.sendFiles(imagesAdapter.data)
+            if (canUploadImage && imagesAdapter.data.size > 1) {
+                val files = imagesAdapter.data.subList(0, imagesAdapter.data.size - 1)
+                socketViewModel.sendFiles(files)
             } else if (canUploadImage) {
                 Toast.makeText(this, "你还没有选择上传的图片", Toast.LENGTH_SHORT).show()
             } else {

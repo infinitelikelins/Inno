@@ -16,17 +16,22 @@ class ImageAdapter : BaseQuickAdapter<LocalMedia, BaseViewHolder>(R.layout.item_
         setDiffCallback(object : DiffUtil.ItemCallback<LocalMedia>() {
             override fun areContentsTheSame(oldItem: LocalMedia, newItem: LocalMedia): Boolean =
                 oldItem.fileName == newItem.fileName
+
             override fun areItemsTheSame(oldItem: LocalMedia, newItem: LocalMedia): Boolean =
                 oldItem.path == newItem.path
         })
     }
 
     override fun convert(holder: BaseViewHolder, item: LocalMedia) {
-        Glide.with(holder.itemView.context)
-            .load(item.path)
-            .centerCrop()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(holder.getView(R.id.message) as AppCompatImageView)
+        if (item.path == null) {
+            holder.setImageResource(R.id.message, R.drawable.ic_baseline_add_circle_24)
+        } else {
+            Glide.with(holder.itemView.context)
+                .load(item.path)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(holder.getView(R.id.message) as AppCompatImageView)
+        }
     }
 
 }
