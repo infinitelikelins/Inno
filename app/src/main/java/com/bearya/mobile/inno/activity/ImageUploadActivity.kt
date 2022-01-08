@@ -1,5 +1,6 @@
 package com.bearya.mobile.inno.activity
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -22,9 +23,13 @@ import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.listener.OnResultCallbackListener
-import com.thecode.aestheticdialogs.*
+import com.thecode.aestheticdialogs.AestheticDialog
+import com.thecode.aestheticdialogs.DialogAnimation
+import com.thecode.aestheticdialogs.DialogStyle
+import com.thecode.aestheticdialogs.DialogType
+import com.vmadalin.easypermissions.EasyPermissions
 
-class ImageUploadActivity : AppCompatActivity() {
+class ImageUploadActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
         @JvmStatic
@@ -42,6 +47,7 @@ class ImageUploadActivity : AppCompatActivity() {
         }
     }
 
+    private val permissionFileRequestCode = 0x19
     private lateinit var bindView: ActivityImageUploadBinding
     private val socketViewModel: SocketViewModel by viewModels()
     private val imagesAdapter: ImageAdapter by lazy { ImageAdapter() }
@@ -62,7 +68,7 @@ class ImageUploadActivity : AppCompatActivity() {
         imagesAdapter.setOnItemClickListener { _, _, position ->
             run {
                 if (imagesAdapter.data.size - 1 == position) {
-                    openLib()
+                    checkFileReadPermission()
                 } else {
                     AlertDialog.Builder(this).setTitle("上传取消").setMessage("确定要取消上传该张图片吗?")
                         .setPositiveButton("确定") { _, _ ->
@@ -94,8 +100,16 @@ class ImageUploadActivity : AppCompatActivity() {
                 else -> {}
             }
         }
-
         socketViewModel.initSocket(intent?.getStringExtra("address") ?: "")
+    }
+
+    private fun checkFileReadPermission() {
+        EasyPermissions.requestPermissions(
+            this,
+            "上传的图片需要从你的相册中获取",
+            permissionFileRequestCode,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
     }
 
     private fun openLib() {
@@ -159,6 +173,30 @@ class ImageUploadActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        if (requestCode == permissionFileRequestCode)
+            AestheticDialog.Builder(this, DialogStyle.EMOTION, DialogType.ERROR)
+                .setTitle("权限拒绝")
+                .setMessage("您拒绝读取相册图片")
+                .setCancelable(true)
+                .setAnimation(DialogAnimation.SHRINK)
+                .show()
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        if (requestCode == permissionFileRequestCode)
+            openLib()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
 }

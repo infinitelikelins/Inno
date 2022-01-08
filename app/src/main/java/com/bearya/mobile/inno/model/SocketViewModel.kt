@@ -1,8 +1,12 @@
 package com.bearya.mobile.inno.model
 
+import android.app.Application
+import android.net.Uri
+import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bearya.mobile.inno.App
 import com.bearya.mobile.inno.ext.setData
 import com.bearya.mobile.inno.status.SocketStatus
 import com.luck.picture.lib.entity.LocalMedia
@@ -20,7 +24,7 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class SocketViewModel : ViewModel() {
+class SocketViewModel(application: Application) : AndroidViewModel(application) {
 
     private var mConnectionManager: IConnectionManager? = null
     private var socketActionAdapter: SocketActionAdapter? = null
@@ -114,7 +118,14 @@ class SocketViewModel : ViewModel() {
     private fun sendFile(filePath: String) {
         viewModelScope.launch(Dispatchers.IO) {
             delay(1000)
-            mConnectionManager?.send(SendFileData(File(filePath)))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                getApplication<App>().contentResolver.openInputStream(Uri.parse(filePath))
+                    ?.readBytes()?.also {
+                        mConnectionManager?.send(SendFileData(it))
+                    } ?: socketStatus.setData(SocketStatus.SOCKET_SEND_COMPLETED)
+            } else {
+                mConnectionManager?.send(SendFileData(File(filePath).readBytes()))
+            }
         }
     }
 
@@ -130,8 +141,8 @@ class SocketViewModel : ViewModel() {
         message.setData(msg)
     }
 
-    private inner class SendFileData(private val file: File) : ISendable {
-        override fun parse(): ByteArray = file.readBytes().let {
+    private inner class SendFileData(private val fileBytes: ByteArray) : ISendable {
+        override fun parse(): ByteArray = fileBytes.let {
             ByteBuffer.allocate(4 + it.size).apply {
                 order(ByteOrder.BIG_ENDIAN)
                 putInt(it.size)

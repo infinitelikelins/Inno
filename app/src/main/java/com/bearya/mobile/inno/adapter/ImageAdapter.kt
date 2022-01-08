@@ -1,6 +1,5 @@
 package com.bearya.mobile.inno.adapter
 
-
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.DiffUtil
 import com.bearya.mobile.inno.R
@@ -23,15 +22,14 @@ class ImageAdapter : BaseQuickAdapter<LocalMedia, BaseViewHolder>(R.layout.item_
     }
 
     override fun convert(holder: BaseViewHolder, item: LocalMedia) {
-        if (item.path == null) {
+        if (item.path == null)
             holder.setImageResource(R.id.message, R.drawable.ic_baseline_add_circle_24)
-        } else {
+        else
             Glide.with(holder.itemView.context)
                 .load(item.path)
                 .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(holder.getView(R.id.message) as AppCompatImageView)
-        }
     }
 
 }
